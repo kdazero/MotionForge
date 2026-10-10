@@ -1,14 +1,22 @@
 # MotionForge
 
+| 原圖 | 揮手 | 思考 |
+| :---: | :---: | :---: |
+| ![角色原圖](examples/showcase/original.png) | ![MotionForge 0.3.1 揮手動畫](examples/showcase/wave.webp) | ![MotionForge 0.3.1 思考動畫](examples/showcase/think.webp) |
+
+使用 **MotionForge 0.3.1** 製作；展示版本已由專案作者確認。[展示素材說明](examples/showcase/README.md) · [下載 0.3.1](https://github.com/kdazero/MotionForge/releases/tag/v0.3.1)
+
 **讓 AI 使用角色分件、骨架與動作參考，製作可下載的 2D 動畫。**
 
 MotionForge 是本機執行的 MCP 工具，提供動畫編寫、CPU 渲染、逐幀檢查與素材匯出。接上支援本機 MCP 與圖片檢視的 AI 客戶端後，可以用對話操作。**目前是開發者預覽版，沒有圖形操作介面，也沒有影片自動動作捕捉或內建補圖模型。**
 
 不需要 Spine、GPU 或 MotionForge 帳號。AI 客戶端／模型由使用者自行準備，其費用與資料傳送方式依該服務而定。
 
-![內附幾何機器人的揮手草稿](examples/robot/preview.webp)
+**0.3.1 更新**：手掌依腕根與腕寬對齊、取樣校正膚色；連續關節網格保留袖口輪廓；分件檢查可攔截衣服缺失與其他部位的殘片；固定遮擋規則讓思考時的手指顯示在臉前。新角色的組裝方式見 [關節、膚色與遮擋](docs/JOINT_ASSEMBLY.md)。
 
-內附範例：程式繪製的機器人與可編輯揮手動作（草稿示範）。
+**內附固定動作配方（自 0.3.0 起）**：包含配方角色的最終版揮手（V3.9，約 3.67 秒）與思考（V3.6，4.8 秒），以及 31 張共用分件、轉掌／屈指手型、網格與完整時間軌。AI 可透過 `instantiate_motion_recipe` 直接建立可復刻專案，不需要原作者電腦或 Spine。配方角色與頁首展示角色不同；手指改模、腕袖遮擋、肩腕跟隨與新角色對位方法見 [動作配方](docs/GESTURE_RECIPES.md)。
+
+安裝後可執行 `python examples/replay_gestures.py --workspace ./workspace`，透過真正 MCP 產生兩段透明動圖與草稿包。AI 接入後先讀 `get_motion_recipe` 或 `motionforge://recipes/female_gestures_v1`；骨架／素材不相容時不會直接套用固定角度。原生資料可精確復刻，新角色仍需自己的手型與關節對位，渲染結果須另行逐幀檢查。
 
 ## 可以做什麼？
 

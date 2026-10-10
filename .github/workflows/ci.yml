@@ -23,4 +23,5 @@ jobs:
       - run: python -m ruff format --check src tests scripts examples
       - run: python -m pytest -q
       - run: python examples/run_demo.py --workspace ./workspace
+      - run: python examples/replay_gestures.py --workspace ./workspace
       - run: python -m build

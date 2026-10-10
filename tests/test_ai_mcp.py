@@ -32,6 +32,40 @@ async def exercise(session, workspace):
     caps = payload(await session.call_tool("get_capabilities", {}))
     assert caps["requires_spine"] is False and caps["requires_display"] is False
     assert (await session.read_resource("motionforge://workflow")).contents
+    assert {
+        "list_motion_recipes",
+        "get_motion_recipe",
+        "instantiate_motion_recipe",
+        "verify_motion_recipe",
+        "apply_motion_recipe",
+    } <= names
+    recipe_id = "female_gestures_v1"
+    assert (await session.read_resource("motionforge://recipes/" + recipe_id)).contents
+    recipe = payload(await session.call_tool("get_motion_recipe", {"recipe_id": recipe_id}))
+    assert recipe["actions"]["wave"]["frames_including_endpoint"] == 111
+    created = payload(
+        await session.call_tool(
+            "instantiate_motion_recipe", {"recipe_id": recipe_id, "project_id": "recipe-copy"}
+        )
+    )
+    assert created["compatible"] and all(created["exact_actions"].values())
+    checked = payload(
+        await session.call_tool("verify_motion_recipe", {"recipe_id": recipe_id, "project_id": "recipe-copy"})
+    )
+    assert not checked["visual_review_passed"]
+    applied = payload(
+        await session.call_tool(
+            "apply_motion_recipe",
+            {
+                "recipe_id": recipe_id,
+                "project_id": "recipe-copy",
+                "actions": ["wave", "think"],
+                "expected_revision": checked["revision"],
+                "overwrite": True,
+            },
+        )
+    )
+    assert applied["revision"] != checked["revision"]
     stream = io.BytesIO()
     Image.new("RGBA", (32, 64), "#62b4ed").save(stream, "PNG")
     uploaded = payload(
@@ -42,6 +76,19 @@ async def exercise(session, workspace):
     )
     viewed = await session.call_tool("inspect_image", {"path": uploaded["path"]})
     assert not viewed.isError and any(c.type == "image" for c in viewed.content)
+    bad_cut = await session.call_tool(
+        "extract_part",
+        {
+            "image_path": uploaded["path"],
+            "mask": {
+                "name": "wrong-owner",
+                "polygon": [[0, 0], [32, 0], [32, 64], [0, 64]],
+                "pivot": [16, 32],
+                "forbidden_polygons": [[[8, 8], [16, 8], [16, 16], [8, 16]]],
+            },
+        },
+    )
+    assert bad_cut.isError and "forbidden pixels" in str(bad_cut.content)
     payload(
         await session.call_tool(
             "create_character",
@@ -124,6 +171,56 @@ async def exercise(session, workspace):
     chunk = payload(await session.call_tool("read_artifact_bytes", {"path": draft["bundle"], "length": 4}))
     assert base64.b64decode(chunk["data_base64"]) == b"PK\x03\x04"
     assert (await session.call_tool("read_artifact_bytes", {"path": "../../outside"})).isError
+    assert {"register_joint_attachment", "bind_joint_strip", "set_layer_constraints"} <= names
+    registered = payload(
+        await session.call_tool(
+            "register_joint_attachment",
+            {
+                "project_id": "client",
+                "slot": "body",
+                "name": "registered",
+                "image_path": uploaded["path"],
+                "registration": {
+                    "source_edges": [[6, 32], [26, 32]],
+                    "target_edges": [[-10, 0], [10, 0]],
+                    "source_sample": [8, 20, 12, 12],
+                    "reference_slot": "body",
+                    "reference_attachment": "body",
+                    "reference_sample": [8, 20, 12, 12],
+                },
+            },
+        )
+    )
+    assert registered["registration"]["color_matched"] and not registered["source_pixels_changed"]
+    bound = payload(
+        await session.call_tool(
+            "bind_joint_strip",
+            {
+                "project_id": "client",
+                "strip": {
+                    "slot": "body",
+                    "attachment": "registered",
+                    "parent_bone": "root",
+                    "child_bone": "body",
+                    "start": [16, 0],
+                    "end": [16, 63],
+                    "blend_width": 12,
+                },
+            },
+        )
+    )
+    changed = payload(
+        await session.call_tool(
+            "set_layer_constraints",
+            {"project_id": "client", "expected_revision": bound["revision"], "constraints": []},
+        )
+    )
+    assert changed["revision"] != bound["revision"]
+    stale = await session.call_tool(
+        "set_layer_constraints",
+        {"project_id": "client", "expected_revision": bound["revision"], "constraints": []},
+    )
+    assert stale.isError
 
 
 def test_ai_stdio(tmp_path):

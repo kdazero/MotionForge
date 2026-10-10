@@ -15,11 +15,14 @@ from mcp.types import ToolAnnotations
 from PIL import Image
 from pydantic import Field
 
+from . import __version__
 from .ai_assets import PartMask
 from .ai_assets import extract_part as cut_part
 from .ai_service import AIService, RenderSpec, VisualCheck, digest
+from .joints import JointRegistration, JointStrip
 from .mesh import MeshSpec
 from .motion import PRESETS, Bone, Layer, validate_skeleton
+from .recipes import apply_recipe, get_recipe, instantiate_recipe, list_recipes, verify_recipe
 from .software_renderer import SoftwareRenderer, supported
 from .storage import MotionError, inside
 
@@ -32,7 +35,21 @@ own image-editing tool, or use supplied parts. Never call a flat-image wobble a 
 Use extract_part with explicit outlines/holes for visible original pixels; it does not fill
 hidden regions or remove accidental contamination automatically. Inspect each extracted part.
 Use upload_asset, create_character/import_character, inspect_character, bind_mesh and
-register_attachment. Keep wrist roots under upper cuff lips and give joints overlapping artwork.
+register_attachment. For replacement hands use register_joint_attachment with measured wrist
+edges and opaque skin samples: it aligns width, pivot and orientation, calibrates color without
+rewriting source PNGs, and can feather the overlapped root. Do not guess image-center offsets.
+For bare elbows use ONE continuous skin cutout and bind_joint_strip; two independently cut
+round caps produce seams. Select blend_width using the actual extreme poses; too-wide bends
+can create holes. For clothing, supply extract_part.required_polygons covering the complete
+garment, including the areas arms expose when lifted. Cutouts cannot reconstruct hidden art.
+Use extract_part.forbidden_polygons to reject retained pixels owned by another part, including
+connected sleeve slivers on the torso. Required regions must follow actual garment boundaries,
+not include adjacent sleeves. Joint-strip rows preserve silhouette corners at slanted cuffs.
+For sleeves, use bind_mesh with chest weights along the sewn armhole and arm weights toward
+the outer sleeve/cuff; a height-only weight gradient can pull the whole inner seam away.
+Inspect the isolated torso, sleeve and skin, then their combined setup and raised-arm poses.
+Use set_layer_constraints before lock_identity for persistent [behind,in_front] rules, e.g.
+[head,thinking_hand]. They survive drawOrder keys. Keep wrist roots under upper cuff lips.
 Coordinates: bone-local Y up; texture UV origin at top left; layers back to front.
 Independent hand or expression attachments belong to the same character, not a new whole-body image.
 Use set_animation for complete bone/slot/deform/drawOrder timelines; key times are seconds,
@@ -49,6 +66,12 @@ export_animations requires full visual review by default; require_reviewed=false
 clearly marked draft. Outputs: transparent PNG frames, WebP, APNG, optional binary-alpha GIF and
 paged spritesheets with timing and root pivot. Exact endpoint PNG is for review and omitted
 from loops to avoid an extra held frame. Engine-native game skeleton integration is not certified.
+For the final wave and thinking gestures, read list_motion_recipes and get_motion_recipe first.
+Use instantiate_motion_recipe to reproduce the packaged character without missing hand art.
+Use verify_motion_recipe to check exact rig/art/timeline compatibility; apply_motion_recipe
+restores frozen actions with revision checks. Read motionforge://recipes/female_gestures_v1.
+For another character, follow the recipe's wrist registration, finger-pose and retargeting guide;
+never equate matching bone names or a generic preset with faithful reproduction.
 All paths are relative to the workspace. Original inputs and past revisions remain available.
 """
 
@@ -85,7 +108,7 @@ def build_ai_server(workspace: Path, port=8776):
         """Read supported production features, boundaries and the complete AI workflow."""
         return dict(
             name="MotionForge",
-            version="0.2.0",
+            version=__version__,
             requires_spine=False,
             requires_display=False,
             workspace=str(ai.workspace),
@@ -102,6 +125,10 @@ def build_ai_server(workspace: Path, port=8776):
                 "draw order",
                 "vertex deformation",
                 "slot tint",
+                "measured joint registration and skin color calibration",
+                "continuous joint-strip binding and root feathering",
+                "persistent semantic layer constraints",
+                "required source-pixel coverage validation",
                 "transparent PNG/WebP/APNG",
                 "GIF",
                 "spritesheets",
@@ -117,8 +144,40 @@ def build_ai_server(workspace: Path, port=8776):
                 "game-runtime certification",
             ],
             presets=PRESETS,
+            motion_recipes=list_recipes(),
             workflow=WORKFLOW,
         )
+
+    @mcp.tool(annotations=read)
+    def list_motion_recipes() -> list[dict]:
+        """Discover frozen, reproducible motion recipes including exact hand assets and production guides."""
+        return list_recipes()
+
+    @mcp.tool(annotations=read)
+    def get_motion_recipe(recipe_id: str, include_animation_data: bool = False) -> dict:
+        """Read finger-pose specifications, attachment times, joint/layer rules, references and review criteria. Optionally get the exact rig and tracks for character-specific adaptation."""
+        return get_recipe(recipe_id, include_animation_data)
+
+    @mcp.tool(annotations=write)
+    def instantiate_motion_recipe(recipe_id: str, project_id: str) -> dict:
+        """Create a NEW character from the complete offline recipe with original hand variants. Returns ready-to-use render specs. No image generation or Spine required; no automatic visual approval."""
+        return instantiate_recipe(ai, recipe_id, project_id)
+
+    @mcp.tool(annotations=read)
+    def verify_motion_recipe(project_id: str, recipe_id: str) -> dict:
+        """Check exact rig, image hashes and motion tracks. This does not certify visual quality or retarget arbitrary characters."""
+        return verify_recipe(ai, project_id, recipe_id)
+
+    @mcp.tool(annotations=write)
+    def apply_motion_recipe(
+        project_id: str, recipe_id: str, expected_revision: str, actions: list[str], overwrite: bool = False
+    ) -> dict:
+        """Apply frozen wave/think to a matching rig and artwork as a new revision. Reject mismatched parts, stale revisions and accidental overwrite. Other characters require the guide's calibration workflow."""
+        return apply_recipe(ai, project_id, recipe_id, expected_revision, actions, overwrite)
+
+    @mcp.resource("motionforge://recipes/female_gestures_v1")
+    def gesture_recipe() -> str:
+        return json.dumps(get_recipe("female_gestures_v1"), ensure_ascii=False)
 
     @mcp.tool(annotations=write)
     def lock_identity(
@@ -218,6 +277,25 @@ def build_ai_server(workspace: Path, port=8776):
         return ai.register_attachment(project_id, slot, name, image_path, x, y, scale)
 
     @mcp.tool(annotations=write)
+    def register_joint_attachment(
+        project_id: str, slot: str, name: str, image_path: str, registration: JointRegistration
+    ) -> dict:
+        """Register a hand by two measured wrist edges, not the image center. Source edges are texture pixels/Y-down; target edges are slot-local/Y-up. Optional opaque skin samples calibrate RGB without changing source PNGs. root_fade is a texture-pixel overlap feather; use only over continuous forearm artwork."""
+        return ai.register_joint_attachment(project_id, slot, name, image_path, registration)
+
+    @mcp.tool(annotations=write)
+    def bind_joint_strip(project_id: str, strip: JointStrip) -> dict:
+        """Bind one continuous skin region across a parent/child joint. Measured start/end use texture pixels; blend_width uses setup world units. Rigid blending retains cross-section thickness. Requires uncut joint art; does not reconstruct missing pixels. Inspect extreme poses."""
+        return ai.bind_joint_strip(project_id, strip)
+
+    @mcp.tool(annotations=write)
+    def set_layer_constraints(
+        project_id: str, expected_revision: str, constraints: list[tuple[str, str]]
+    ) -> dict:
+        """Set persistent [behind, in_front] slot pairs. Rules are applied after every drawOrder key, so fingers can remain above a face through an entire action. Unknown slots, cycles and stale edits fail. Call before lock_identity."""
+        return ai.set_layer_constraints(project_id, expected_revision, constraints)
+
+    @mcp.tool(annotations=write)
     def map_roles(project_id: str, roles: dict[str, str]) -> dict:
         """Assign semantic roles (body/head/arm/hand/arm_left/right/etc.) after reading actual bone names."""
         return ai.service.map_roles(project_id, roles)
@@ -231,7 +309,7 @@ def build_ai_server(workspace: Path, port=8776):
         strength: float = 1,
         overwrite: bool = False,
     ) -> dict:
-        """Create editable starting motion from get_capabilities.presets. Tune it for proportions and artwork; preset creation does not approve quality."""
+        """Create a generic starting motion, NOT the frozen final wave/thinking recipe. For those use get_motion_recipe and instantiate_motion_recipe. Tune generic presets for proportions and artwork; creation does not approve quality."""
         return ai.service.add_preset(project_id, preset, name, seconds, strength, overwrite)
 
     @mcp.tool(annotations=write)

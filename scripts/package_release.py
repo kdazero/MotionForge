@@ -3,6 +3,7 @@
 import hashlib
 import json
 import tarfile
+import tomllib
 import zipfile
 from pathlib import Path
 
@@ -34,8 +35,9 @@ def public_file(relative):
 def main():
     root = Path(__file__).resolve().parents[1]
     dist = root / "dist"
-    wheel = dist / "motionforge-0.2.0-py3-none-any.whl"
-    sdist = dist / "motionforge-0.2.0.tar.gz"
+    version = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    wheel = dist / f"motionforge-{version}-py3-none-any.whl"
+    sdist = dist / f"motionforge-{version}.tar.gz"
     if not wheel.is_file() or not sdist.is_file():
         raise FileNotFoundError("Run python -m build first.")
     with zipfile.ZipFile(wheel) as z:
@@ -46,7 +48,7 @@ def main():
     with tarfile.open(sdist) as archive:
         assert not any("__pycache__" in n or "/workspace/" in n for n in archive.getnames())
     files = sorted(p for p in root.rglob("*") if p.is_file() and public_file(p.relative_to(root)))
-    target = dist / "MotionForge-0.2.0-user-kit.zip"
+    target = dist / f"MotionForge-{version}-user-kit.zip"
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
         for path in files:
             archive.write(path, "MotionForge/" + path.relative_to(root).as_posix())

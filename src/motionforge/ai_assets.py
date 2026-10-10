@@ -15,6 +15,16 @@ from .storage import MotionError, identifier, inside, write_json
 
 
 class PartMask(Model):
+    forbidden_polygons: list[list[tuple[float, float]]] = Field(
+        default_factory=list,
+        max_length=16,
+        description="Source areas owned by other parts (e.g. sleeve pixels that must not remain on the torso). Reject retained opaque pixels here; this validates rather than silently erasing artwork.",
+    )
+    required_polygons: list[list[tuple[float, float]]] = Field(
+        default_factory=list,
+        max_length=16,
+        description="Source areas this part must preserve (e.g. the entire vest silhouette). Extraction fails if the outline, exclusions or skin filter cut opaque pixels here. Use interior coverage landmarks, not antialiased silhouette edges.",
+    )
     clip_polygons: list[list[tuple[float, float]]] = Field(
         default_factory=list,
         max_length=8,
@@ -57,7 +67,14 @@ def extract_part(workspace: Path, image_path: str, mask: PartMask):
     identifier(mask.name)
     source = inside(workspace, image_path)
     width, height = checked_image(source)
-    polygons = [mask.polygon, *mask.excluded_polygons, *mask.excluded_warm_skin_polygons, *mask.clip_polygons]
+    polygons = [
+        mask.polygon,
+        *mask.excluded_polygons,
+        *mask.excluded_warm_skin_polygons,
+        *mask.clip_polygons,
+        *mask.required_polygons,
+        *mask.forbidden_polygons,
+    ]
     if any(not 3 <= len(p) <= 256 for p in polygons):
         raise MotionError("Each outline/hole needs 3–256 points.")
     if not all(0 <= x <= width and 0 <= y <= height for p in polygons for x, y in p):
@@ -76,6 +93,7 @@ def extract_part(workspace: Path, image_path: str, mask: PartMask):
         alpha_mask = ImageChops.multiply(alpha_mask, clip.resize((width, height), Image.Resampling.LANCZOS))
     with Image.open(source) as original:
         part = original.convert("RGBA")
+    original_alpha = np.array(part.getchannel("A"))
     if mask.isolate_warm_skin or mask.excluded_warm_skin_polygons:
         rgb = np.array(part, dtype=np.int16)[:, :, :3]
         rr, gg, bb = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
@@ -100,6 +118,31 @@ def extract_part(workspace: Path, image_path: str, mask: PartMask):
         alpha[foreground == 0] = 0
         part.putalpha(Image.fromarray(alpha))
     part.putalpha(ImageChops.multiply(part.getchannel("A"), alpha_mask))
+    if mask.forbidden_polygons:
+        forbidden = Image.new("L", (width, height))
+        for polygon in mask.forbidden_polygons:
+            ImageDraw.Draw(forbidden).polygon(polygon, fill=255)
+        retained = (np.array(forbidden) > 0) & (np.array(part.getchannel("A")) >= 32)
+        if retained.any():
+            yy, xx = np.where(retained)
+            raise MotionError(
+                f"Extraction retains {int(retained.sum())} forbidden pixels belonging to another part near source box "
+                f"[{int(xx.min())}, {int(yy.min())}, {int(xx.max()) + 1}, {int(yy.max()) + 1}]. "
+                "Correct the outline or exclusions; connected sleeve/skin remnants also need removal."
+            )
+    if mask.required_polygons:
+        required = Image.new("L", (width, height))
+        for polygon in mask.required_polygons:
+            ImageDraw.Draw(required).polygon(polygon, fill=255)
+        expected = (np.array(required) > 0) & (original_alpha >= 245)
+        missing = expected & (np.array(part.getchannel("A")) < 220)
+        if missing.any():
+            yy, xx = np.where(missing)
+            raise MotionError(
+                f"Extraction cuts {int(missing.sum())} required opaque pixels near source box "
+                f"[{int(xx.min())}, {int(yy.min())}, {int(xx.max()) + 1}, {int(yy.max()) + 1}]. "
+                "Expand the part outline or correct its exclusions; preserve the complete clothing/skin region."
+            )
     box = part.getbbox()
     if not box:
         raise MotionError("Mask contains no visible source pixels.")

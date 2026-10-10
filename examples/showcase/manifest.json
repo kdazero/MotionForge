@@ -1,0 +1,34 @@
+{
+  "version": "0.3.1",
+  "approval": {
+    "scope": "README showcase original, wave and thinking outputs",
+    "approved_by": "project owner",
+    "date": "2026-10-10",
+    "timezone": "Asia/Taipei",
+    "engine_per_frame_review_overridden": false
+  },
+  "source": "Original character and hand artwork generated for this project; animations rendered with MotionForge 0.3.1.",
+  "canvas": [
+    768,
+    768
+  ],
+  "animation_fps": 30,
+  "animation_seconds": {
+    "wave": 3.6667,
+    "think": 4.8
+  },
+  "files": {
+    "original.png": {
+      "sha256": "30819152ae4630667253149c7ec3de22074a0bb962b745a736fd4ae3363ced64",
+      "bytes": 144271
+    },
+    "wave.webp": {
+      "sha256": "8680daebc12c75c511bc6b37b68c60d48e763622a452e43a350b5593510483e0",
+      "bytes": 7632444
+    },
+    "think.webp": {
+      "sha256": "6e3cc1de1627640f545ae008fb79afe04f62bad632342b605b36dbe4a23c21a5",
+      "bytes": 5455792
+    }
+  }
+}

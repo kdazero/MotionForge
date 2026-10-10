@@ -14,6 +14,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
+from .joints import ordered_slots, texture_effects
 from .motion import duration, validate_skeleton
 from .render import easing, inverse, multiply, point, sample, transform, worlds
 from .rigid_skinning import rigid_blend_point
@@ -176,9 +177,9 @@ class SoftwareRenderer:
                         if source.width * source.height > 16_000_000:
                             raise MotionError("Texture exceeds 16 megapixels.")
                         tex = np.asarray(source.convert("RGBA"), dtype=np.float32) / 255
-                    tex[:, :, :3] *= tex[:, :, 3:4]
                     self._textures[path] = tex
-                tex = self._textures[path]
+                tex = texture_effects(self._textures[path], a)
+                tex[:, :, :3] *= tex[:, :, 3:4]
                 h, w = tex.shape[:2]
                 if a.get("type", "region") == "region":
                     aw, ah = a.get("width", w), a.get("height", h)
@@ -282,6 +283,7 @@ class SoftwareRenderer:
                     raise MotionError(f"Missing attachment: {slot}/{k['name']}")
         for key in self.animation.get("drawOrder", []):
             draw_order(data.get("slots", []), key.get("offsets", []))
+        ordered_slots(data.get("slots", []), data.get("layerConstraints", []))
 
     def positions(self, part, matrices, t, setup=False):
         if part.get("rigid_skinning"):
@@ -318,7 +320,7 @@ class SoftwareRenderer:
             if key.get("time", 0) <= t:
                 slots = draw_order(self.data.get("slots", []), key.get("offsets", []))
         result = []
-        for slot in slots:
+        for slot in ordered_slots(slots, self.data.get("layerConstraints", [])):
             name = slot.get("attachment")
             channels = self.animation.get("slots", {}).get(slot["name"], {})
             for key in channels.get("attachment", []):
@@ -478,6 +480,13 @@ def timeline(animation, fps):
     seconds = duration(animation)
     if not 0 < seconds <= 20 or not 1 <= fps <= 60:
         raise MotionError("Animation must last 0..20 seconds; FPS must be 1..60.")
-    count = math.ceil(seconds * fps - 1e-8)
+    # Native JSON rounds key times to four decimal places. A rounded 3.6667
+    # must not add a near-zero interval after frame 110 at 30 FPS.
+    nearest = round(seconds * fps)
+    count = (
+        nearest
+        if nearest > 0 and abs(seconds - nearest / fps) <= 0.00005
+        else math.ceil(seconds * fps - 1e-8)
+    )
     times = [min(i / fps, seconds) for i in range(count)]
     return times + [seconds]

@@ -1,0 +1,284 @@
+{
+  "recipe_id": "female_gestures_v1",
+  "schema": 1,
+  "version": "1.0.0",
+  "title": "女性共用分件：最終版揮手與思考",
+  "source": "Local project test artwork and frozen reviewed animation data; not third-party game artwork.",
+  "source_json_sha256": "164f10754dde091f15af4c968e56013d0d8979efe8c963e41c7c29436fcbc1b9",
+  "rig_sha256": "2948148b525f250eedb27c74d2d4f3621d719cfb4d8ca52e93683756692d80a8",
+  "roles": {
+    "root": "root",
+    "body": "body",
+    "head": "head",
+    "arm": "arm_right",
+    "arm_left": "arm_left",
+    "arm_right": "arm_right",
+    "hand": "hand_right"
+  },
+  "actions": {
+    "wave": {
+      "source_version": "V3.9",
+      "animation_sha256": "a52cf336ba89239709e923ca2595a5e456ce631b861597697c3e91d673802f56",
+      "seconds": 3.6667,
+      "fps": 30,
+      "frames_including_endpoint": 111,
+      "screen_side": "right",
+      "hand_slot": "hand_right",
+      "attachment_timeline": [
+        {
+          "name": "hand_right"
+        },
+        {
+          "time": 0.19,
+          "name": "hand_turn_0"
+        },
+        {
+          "time": 0.2234,
+          "name": "hand_turn_1"
+        },
+        {
+          "time": 0.2567,
+          "name": "hand_turn_2"
+        },
+        {
+          "time": 0.29,
+          "name": "hand_turn_3"
+        },
+        {
+          "time": 0.3333,
+          "name": "hand_turn_4"
+        },
+        {
+          "time": 0.39,
+          "name": "hand_turn_5"
+        },
+        {
+          "time": 3.2833,
+          "name": "hand_turn_4"
+        },
+        {
+          "time": 3.3267,
+          "name": "hand_turn_3"
+        },
+        {
+          "time": 3.3734,
+          "name": "hand_turn_2"
+        },
+        {
+          "time": 3.4067,
+          "name": "hand_turn_1"
+        },
+        {
+          "time": 3.44,
+          "name": "hand_turn_0"
+        },
+        {
+          "time": 3.4833,
+          "name": "hand_right"
+        }
+      ],
+      "draw_order": [
+        {
+          "offsets": [
+            {
+              "slot": "torso",
+              "offset": -4
+            }
+          ]
+        }
+      ],
+      "required_bones": [
+        "hand_right",
+        "arm_right",
+        "forearm_right",
+        "chest",
+        "head",
+        "palm_turn"
+      ],
+      "source_review": "1bbe4a410fa3424a888facbf9d66b467",
+      "source_review_note": "Native source reviewed previously; new MotionForge renders require their own review."
+    },
+    "think": {
+      "source_version": "V3.6",
+      "animation_sha256": "b5b50e5697e65c074539cdaf4676fc413ac589f500aa7992adfafb63e2ba335e",
+      "seconds": 4.8,
+      "fps": 30,
+      "frames_including_endpoint": 145,
+      "screen_side": "left",
+      "hand_slot": "hand_left",
+      "attachment_timeline": [
+        {
+          "name": "hand_left"
+        },
+        {
+          "time": 0.5,
+          "name": "hand_think_loose"
+        },
+        {
+          "time": 1.12,
+          "name": "hand_think_closed"
+        },
+        {
+          "time": 3.49,
+          "name": "hand_think_loose"
+        },
+        {
+          "time": 4.06,
+          "name": "hand_left"
+        }
+      ],
+      "draw_order": [
+        {
+          "offsets": [
+            {
+              "slot": "torso",
+              "offset": -8
+            }
+          ]
+        }
+      ],
+      "required_bones": [
+        "hand_left",
+        "arm_left",
+        "forearm_left",
+        "head",
+        "chest",
+        "brow_left",
+        "brow_right",
+        "eye_left",
+        "eye_right"
+      ],
+      "source_review": "007a314664a64b3daef14877d8b21dff",
+      "source_review_note": "Native source reviewed previously; new MotionForge renders require their own review."
+    }
+  },
+  "part_count": 31,
+  "render_defaults": {
+    "fps": 30,
+    "size": 512,
+    "supersample": 2,
+    "bounds": [
+      -394.2454999977474,
+      9.0056050175954,
+      590.6589533467576,
+      1561.5014485018532
+    ],
+    "formats": [
+      "webp"
+    ]
+  },
+  "references": [
+    {
+      "name": "gemini-wave",
+      "title": "你的揮手參考｜換至畫面右側",
+      "span": "3–8.8 秒",
+      "note": "掌心朝前，肘靠近身體，前臂帶動、腕部跟隨。左右換手並補足被剪接省略的連續抬手。",
+      "url": "https://share.gemini.google/5BYlxNNFZ6Qn"
+    },
+    {
+      "name": "gemini-think",
+      "title": "你的思考參考｜只取前四秒",
+      "span": "0–4 秒",
+      "note": "短暫待機、抬手托下巴、皺眉歪頭，再放下。保留示範的畫面左側手勢。",
+      "url": "https://share.gemini.google/5ovDzjRH3eaf"
+    },
+    {
+      "name": "nicole-wave",
+      "title": "妮可｜絕區零",
+      "span": "23–25.4 秒",
+      "note": "招呼時掌、腕、前臂配合；本次改編為完整的抬手與落手。",
+      "url": "https://www.youtube.com/watch?v=BA5eUSejUiQ&t=23"
+    },
+    {
+      "name": "burnice",
+      "title": "柏妮思｜絕區零",
+      "span": "9–17 秒",
+      "note": "手腕位於衣袖中心，提壺與收手時衣袖保持連接。",
+      "url": "https://www.youtube.com/watch?v=0NQPMTJ9rh0&t=9"
+    },
+    {
+      "name": "shorekeeper",
+      "title": "守岸人｜鳴潮",
+      "span": "129–135 秒",
+      "note": "眼瞼、眉毛與抬頭共同表達情緒；臉型及五官設計保持一致。",
+      "url": "https://www.youtube.com/watch?v=FQEyNpQnK60&t=129"
+    },
+    {
+      "name": "zhezhi",
+      "title": "折枝｜鳴潮",
+      "span": "20、30 秒",
+      "note": "同一角色用嘴角、眉眼與頭傾斜演出不同情緒。",
+      "url": "https://www.youtube.com/watch?v=GPaHYat18DI&t=20"
+    },
+    {
+      "name": "aalto-smile",
+      "title": "秋水｜鳴潮",
+      "span": "28–31.2 秒",
+      "note": "男性角色的收斂微笑與眼瞼配合。",
+      "url": "https://www.youtube.com/watch?v=DKIcH6N-QVU&t=28"
+    },
+    {
+      "name": "anby-idle",
+      "title": "安比｜絕區零（玩家錄製）",
+      "span": "2–6 秒",
+      "note": "站姿下胸肩、頭部的微動。為全身觀看加大幅度，沒有照搬手勢。",
+      "url": "https://www.youtube.com/watch?v=l9PQ9eaW7KA&t=2"
+    },
+    {
+      "name": "burnice-cuff",
+      "title": "柏妮思｜腕袖與思考手勢",
+      "span": "8–18 秒",
+      "note": "提壺時腕根藏於袖內；放下後屈指靠近嘴邊。本輪思考取其抬手、停頓與手勢，改為靠近下巴。",
+      "url": "https://www.youtube.com/watch?v=0NQPMTJ9rh0&t=17"
+    },
+    {
+      "name": "zhezhi-talk-think",
+      "title": "折枝｜對話節奏",
+      "span": "18–23、25–26 秒",
+      "note": "折枝說話的閉口停頓與不同開口幅度；25–26 秒委託人的屈臂思索姿勢作補充。",
+      "url": "https://www.youtube.com/watch?v=GPaHYat18DI&t=18"
+    }
+  ],
+  "limitations": [
+    "Existing rear-hair seam",
+    "Discrete hand attachment swaps visible in slow motion",
+    "No automatic retargeting, image generation or new-render visual approval",
+    "MotionForge and Spine rasterization are not pixel-identical"
+  ],
+  "files": {
+    "character.json": "ac6992f412f14522f72204bc15b091b0434d261b607585981ae2ac33e438eba1",
+    "guide.md": "ba77b2ee57e65374cfeb75ed0fd73c0ad2205e3a67df82402745442177d6b6bb",
+    "hand-reference.png": "ed6a8c4c0dfe0625b6d2a2eb20e2fc92ec173ccab652c55768defb38411f23e4",
+    "images/boot_left.png": "44069804e6b5a8f94e885d086b49039a5aee8e30b8049ab33d3c6407da6c2f0f",
+    "images/boot_right.png": "03655eb07537b8932d84a31891b0f8a74e594ac304580ed39148b9d186fae6a3",
+    "images/brow_left.png": "d6b68ef3bf43dd118c6699c8b909f2462e80e5f0a5b7bb518e1f7dc99ad60ac4",
+    "images/brow_right.png": "68c68f7b326f42d6ee1e0ff064624badb84340b63277a537e3281548a53e1bda",
+    "images/eye_left.png": "bcd33b352b9777872d193a680245a6d5efb6291880559ae9cb52695e146983eb",
+    "images/eye_right.png": "05e30f5c6434d9d62e6bc3ac89be89352f492ad172e45c958132423786ecc3d9",
+    "images/face_base.png": "90f9dba8209e3c0a02cf533b79e98ca8c81965a990a54bd9c4bc9eca187b8a6e",
+    "images/hair_back.png": "b67799eda9a54e6193c1fbd8a9941c2351260a07a92fff76287161386c15611e",
+    "images/hair_front.png": "a09de09c3887db6e6f0b4d8a8a90670d183747d713f4646916210ef1975def1b",
+    "images/hand_left.png": "b24fce5c0697f5edf5530c20bd91089db602c97924c15c801410b9cb80268281",
+    "images/hand_right.png": "4eb9e41841aad1b3a346f6acb5158da423df1b3df882233d66318b19da37a2ef",
+    "images/hand_think.png": "9f0a234e585b50019633ea8bfa61fdfd891c56a2e144f0292e2b51b03f81d214",
+    "images/hand_think_closed.png": "878e47f0f662e54f0c10a753d41c0d62035e8bdd6ea5feee20e4526b7423040d",
+    "images/hand_think_loose.png": "b5fd0db7ec74d268e74bba9e29817ed7482e7f5a090f293eab2b814bc6375f9c",
+    "images/hand_turn_0.png": "d5ce60003e4b3bee976836d942260791a231869fbd52d95613d8d34cfeed5585",
+    "images/hand_turn_1.png": "6e8c7ae188279ced82e8a66dbabfa31c384062a83615929f88f72864cf02c87f",
+    "images/hand_turn_2.png": "5ce85e3b2f80422a8b2fa6127839d926abfff6e95478ee90e6cf0d722dfe0674",
+    "images/hand_turn_3.png": "3ce577213901519474400acb0e6686889892e8e9a573add3e615b091560db509",
+    "images/hand_turn_4.png": "5f237e109e6f99e0f3e6aee2a6b0733390514ccc1ac77a2a6d3fe104dce6d575",
+    "images/hand_turn_5.png": "7a1ee68ddb7c60b49e2c07db0de5635c78417f966e2bdbaebc5d52d2d4b913c1",
+    "images/lower_sleeve_left.png": "eac2a6f51ec7d779a0918dab8f645fe44cdf1522d82bdde9b61a6b8716f7c64e",
+    "images/lower_sleeve_right.png": "9ebb5dcb6ef56d28ce5099cf715145b9f9e2c317394595209425f747f9506827",
+    "images/mouth.png": "8f9cfb1299d1629d0b535a4e9a7de612dfcfbcd027ce80f955ca36e70e8f32ee",
+    "images/mouth_open.png": "6a9759fce694492e9f7a4b876c100de25edb0fbb443310bc0990ea22d8359c98",
+    "images/shin_left.png": "daddc5ecd088eb1ead0a0873d466eb2525c21eb75d5e6771cd9e54bb2a8a1d19",
+    "images/shin_right.png": "b3d9d70ee48c406d89212f974c40bda243ffdf36c81fc9acabef221ad2a34e5c",
+    "images/thigh_left.png": "4251e00decdc2186feefda7e236ba7765d4b1846d54e73f190d96bd471a39952",
+    "images/thigh_right.png": "88af25a4a8c567633beb4a41b16de7b4aa067e00a4770214da58e999bb39cfe2",
+    "images/torso.png": "53d10b02ce84cba42d06df6282c35ba8089a389aafa54c547b49aa4f731d11e4",
+    "images/upper_sleeve_left.png": "5f723042c05e6a34db83465f89cfb31691c44b30bd8f218576d5eb0b31e99dfc",
+    "images/upper_sleeve_right.png": "210ef4966ae751e5305cb9f45419d0df18361ff870f4ef5b9599753f0cc13ead"
+  }
+}

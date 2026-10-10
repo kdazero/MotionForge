@@ -49,8 +49,21 @@ notice files are retained under `licenses/`, including notices for bundled nativ
 
 The standalone package was extracted from the locally developed SpineMotion project.
 No Spine Editor binary, desktop automation, official Spine Runtime source, downloaded
-reference media, tunnel executable or production character artwork is included.
+reference media or tunnel executable is included.
 The geometric robot is drawn by `src/motionforge/demo.py`; code and sample assets are MIT.
+
+Version 0.3.0 also contains the local project's generated female test-character parts
+and hand variants in `src/motionforge/recipes/female_gestures_v1/`, included at the
+project owner's request to reproduce the two developed gestures. Their provenance,
+exact file hashes and source-motion identifiers are in that recipe's `manifest.json`.
+These are test fixtures, not artwork from the linked games or reference videos.
+Reference URLs and observations are included; third-party media is not redistributed.
+
+Version 0.3.1 includes the project owner's approved generated auburn-haired character
+showcase in `examples/showcase/`: the original display image and two MotionForge-rendered
+animations. The character and hand artwork were created with the built-in image generation
+tool for this project; these are not assets extracted from the referenced games or videos.
+File hashes and the scope of showcase approval are retained in that folder's manifest.
 
 The data schema is informed by the [Spine JSON documentation](https://esotericsoftware.com/spine-json-format).
 Spine is a separate third-party product; no affiliation or official compatibility certification is claimed.

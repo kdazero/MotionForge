@@ -24,6 +24,7 @@ def lock_fidelity(data, project, bounds, expression_bones=(), movable_bones=(), 
         bounds=list(bounds),
         bones=copy.deepcopy(data["bones"]),
         skins=copy.deepcopy(data["skins"]),
+        layer_constraints=copy.deepcopy(data.get("layerConstraints", [])),
         assets=assets,
         expression_bones=list(expression_bones),
         movable_bones=list(movable_bones),
@@ -40,6 +41,8 @@ def validate_fidelity(data, project, animation, bounds=None):
         return
     if data["bones"] != lock["bones"] or data["skins"] != lock["skins"]:
         raise MotionError("Fidelity lock: setup proportions or attachment mapping changed.")
+    if data.get("layerConstraints", []) != lock.get("layer_constraints", []):
+        raise MotionError("Fidelity lock: character layer constraints changed.")
     if bounds is not None and list(bounds) != lock["bounds"]:
         raise MotionError("Fidelity lock: all actions must use the same camera bounds.")
     for path, expected in lock["assets"].items():

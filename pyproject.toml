@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "motionforge"
-version = "0.2.0"
+version = "0.3.1"
 description = "Local 2D character animation authoring and rendering over MCP"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -25,6 +25,9 @@ motionforge = "motionforge.ai_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+motionforge = ["recipes/*/*.json", "recipes/*/*.md", "recipes/*/*.png", "recipes/*/images/*.png"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

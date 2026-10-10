@@ -99,7 +99,9 @@ def bind_region(data: dict, spec: MeshSpec) -> dict:
                 raise MotionError(f"Unknown weight bone: {bone}")
             x, y = point(inverse(matrices[bone]), wx, wy)
             encoded.extend([indices[bone], round(x, 6), round(y, 6), weight])
-    mesh = {k: region[k] for k in ("path", "color") if k in region}
+    mesh = {
+        k: region[k] for k in ("path", "color", "rgbGain", "rootFade", "jointRegistration") if k in region
+    }
     mesh.update(
         type="mesh",
         width=width,

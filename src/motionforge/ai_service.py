@@ -19,6 +19,7 @@ from pydantic import Field
 
 from .fidelity import lock_fidelity, validate_fidelity
 from .gif_export import transparent_gif
+from .joints import attachments, joint_strip, ordered_slots, register_joint
 from .motion import Model, duration, with_animation
 from .render import point
 from .service import MotionService, checked_image
@@ -156,6 +157,72 @@ class AIService:
             return self.service._commit(
                 folder, manifest, data, f"Register independent attachment {slot}/{name}"
             )
+
+    def register_joint_attachment(self, project_id, slot, name, image_path, registration):
+        identifier(name)
+        with self.service.lock():
+            folder, manifest, data = self.service._load(project_id)
+            choices = attachments(data, slot)
+            if name in choices:
+                raise MotionError("Attachment already exists; choose a new name.")
+            source = inside(self.workspace, image_path)
+            width, height = checked_image(source)
+            with Image.open(source) as im:
+                image = im.convert("RGBA")
+            reference = None
+            if registration.reference_slot:
+                reference_att = attachments(data, registration.reference_slot).get(
+                    registration.reference_attachment
+                )
+                if not reference_att:
+                    raise MotionError("Unknown color reference attachment.")
+                reference_slot = next(s for s in data["slots"] if s["name"] == registration.reference_slot)
+                if any(
+                    value.get("color", "ffffffff") != "ffffffff" for value in (reference_att, reference_slot)
+                ):
+                    raise MotionError(
+                        "Sample an untinted reference attachment and slot for skin calibration."
+                    )
+                with Image.open(
+                    inside(
+                        folder / "images",
+                        reference_att.get("path", registration.reference_attachment) + ".png",
+                    )
+                ) as im:
+                    reference = im.convert("RGBA")
+                if reference_att.get("rgbGain"):
+                    raise MotionError(
+                        "Sample an uncorrected reference texture, not an already tinted attachment."
+                    )
+            file_id = "joint_" + uuid.uuid4().hex
+            region = dict(type="region", path=file_id, width=width, height=height)
+            region, report = register_joint(region, image, registration, reference)
+            choices[name] = region
+            shutil.copyfile(source, folder / "images" / (file_id + ".png"))
+            result = self.service._commit(folder, manifest, data, f"Register measured joint {slot}/{name}")
+            result.update(registration=report, source_pixels_changed=False)
+            return result
+
+    def bind_joint_strip(self, project_id, spec):
+        with self.service.lock():
+            folder, manifest, data = self.service._load(project_id)
+            updated = joint_strip(data, folder, spec)
+            for name in updated.get("animations", {}):
+                renderer = SoftwareRenderer(updated, folder, name)
+                renderer.bounds(timeline(renderer.animation, 30))
+            return self.service._commit(folder, manifest, updated, "Bind continuous joint skin")
+
+    def set_layer_constraints(self, project_id, expected_revision, constraints):
+        with self.service.lock():
+            folder, manifest, data = self.service._load(project_id)
+            if manifest["active"] != expected_revision:
+                raise MotionError("Character changed; inspect again before changing layer rules.")
+            ordered_slots(data["slots"], constraints)
+            updated = copy.deepcopy(data)
+            updated["layerConstraints"] = constraints
+            for animation in updated.get("animations", {}).values():
+                validate_fidelity(updated, folder, animation)
+            return self.service._commit(folder, manifest, updated, "Set persistent occlusion constraints")
 
     def analyze(self, project_id, animation, fps=30, skin="default"):
         folder, manifest, data = self.service._load(project_id)
