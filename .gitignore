@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+workspace/
+motionforge-workspace/
+.env
+.env.*
+*.log
+config.local.json
+mcp-config.local.json

@@ -1,0 +1,580 @@
+{
+  "scope": "Installed runtime closure, Windows / Python 3.13; excludes dev/build tools",
+  "dependencies": [
+    {
+      "name": "annotated-types",
+      "version": "0.8.0",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [
+        "License :: OSI Approved :: MIT License"
+      ],
+      "license_files": [
+        "licenses/annotated-types-0.8.0/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/annotated-types/annotated-types",
+        "Source, https://github.com/annotated-types/annotated-types",
+        "Changelog, https://github.com/annotated-types/annotated-types/releases"
+      ]
+    },
+    {
+      "name": "anyio",
+      "version": "4.15.1",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/anyio-4.15.1/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Documentation, https://anyio.readthedocs.io/en/latest/",
+        "Changelog, https://anyio.readthedocs.io/en/stable/versionhistory.html",
+        "Source code, https://github.com/agronholm/anyio",
+        "Issue tracker, https://github.com/agronholm/anyio/issues"
+      ]
+    },
+    {
+      "name": "attrs",
+      "version": "26.1.0",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/attrs-26.1.0/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Documentation, https://www.attrs.org/",
+        "Changelog, https://www.attrs.org/en/stable/changelog.html",
+        "GitHub, https://github.com/python-attrs/attrs",
+        "Funding, https://github.com/sponsors/hynek",
+        "Tidelift, https://tidelift.com/subscription/pkg/pypi-attrs?utm_source=pypi-attrs&utm_medium=pypi"
+      ]
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "license_expression": null,
+      "license_metadata": "MPL-2.0",
+      "license_classifiers": [
+        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)"
+      ],
+      "license_files": [
+        "licenses/certifi-2026.7.22/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Source, https://github.com/certifi/python-certifi"
+      ]
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "license_expression": "MIT-0",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/cffi-2.1.1/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Documentation, https://cffi.readthedocs.io/",
+        "Changelog, https://cffi.readthedocs.io/en/latest/whatsnew.html",
+        "Download, https://github.com/python-cffi/cffi/releases",
+        "Contact, https://groups.google.com/forum/#!forum/python-cffi",
+        "Source Code, https://github.com/python-cffi/cffi",
+        "Issue Tracker, https://github.com/python-cffi/cffi/issues"
+      ]
+    },
+    {
+      "name": "click",
+      "version": "8.5.0",
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/click-8.5.0/licenses/LICENSE.txt"
+      ],
+      "project_urls": [
+        "Changes, https://click.palletsprojects.com/page/changes/",
+        "Chat, https://discord.gg/pallets",
+        "Documentation, https://click.palletsprojects.com/",
+        "Donate, https://palletsprojects.com/donate",
+        "Source, https://github.com/pallets/click/"
+      ]
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "license_expression": "Apache-2.0 OR BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/cryptography-50.0.2/licenses/LICENSE",
+        "licenses/cryptography-50.0.2/licenses/LICENSE.APACHE",
+        "licenses/cryptography-50.0.2/licenses/LICENSE.BSD"
+      ],
+      "project_urls": [
+        "changelog, https://cryptography.io/en/latest/changelog/",
+        "documentation, https://cryptography.io/",
+        "homepage, https://github.com/pyca/cryptography",
+        "issues, https://github.com/pyca/cryptography/issues",
+        "source, https://github.com/pyca/cryptography/"
+      ]
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "license_expression": null,
+      "license_metadata": "MIT",
+      "license_classifiers": [
+        "License :: OSI Approved :: MIT License"
+      ],
+      "license_files": [
+        "licenses/h11-0.16.0/licenses/LICENSE.txt"
+      ],
+      "project_urls": []
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [
+        "License :: OSI Approved :: BSD License"
+      ],
+      "license_files": [
+        "licenses/httpcore-1.0.9/licenses/LICENSE.md"
+      ],
+      "project_urls": [
+        "Documentation, https://www.encode.io/httpcore",
+        "Homepage, https://www.encode.io/httpcore/",
+        "Source, https://github.com/encode/httpcore"
+      ]
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "license_expression": null,
+      "license_metadata": "BSD-3-Clause",
+      "license_classifiers": [
+        "License :: OSI Approved :: BSD License"
+      ],
+      "license_files": [
+        "licenses/httpx-0.28.1/licenses/LICENSE.md"
+      ],
+      "project_urls": [
+        "Changelog, https://github.com/encode/httpx/blob/master/CHANGELOG.md",
+        "Documentation, https://www.python-httpx.org",
+        "Homepage, https://github.com/encode/httpx",
+        "Source, https://github.com/encode/httpx"
+      ]
+    },
+    {
+      "name": "httpx-sse",
+      "version": "0.4.3",
+      "license_expression": null,
+      "license_metadata": "MIT",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/httpx-sse-0.4.3/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/florimondmanca/httpx-sse"
+      ]
+    },
+    {
+      "name": "idna",
+      "version": "3.20",
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/idna-3.20/licenses/LICENSE.md"
+      ],
+      "project_urls": [
+        "Changelog, https://github.com/kjd/idna/blob/master/HISTORY.md",
+        "Issue tracker, https://github.com/kjd/idna/issues",
+        "Source, https://github.com/kjd/idna"
+      ]
+    },
+    {
+      "name": "jsonschema",
+      "version": "4.26.0",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/jsonschema-4.26.0/licenses/COPYING"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/python-jsonschema/jsonschema",
+        "Documentation, https://python-jsonschema.readthedocs.io/",
+        "Issues, https://github.com/python-jsonschema/jsonschema/issues/",
+        "Funding, https://github.com/sponsors/Julian",
+        "Tidelift, https://tidelift.com/subscription/pkg/pypi-jsonschema?utm_source=pypi-jsonschema&utm_medium=referral&utm_campaign=pypi-link",
+        "Changelog, https://github.com/python-jsonschema/jsonschema/blob/main/CHANGELOG.rst",
+        "Source, https://github.com/python-jsonschema/jsonschema"
+      ]
+    },
+    {
+      "name": "jsonschema-specifications",
+      "version": "2025.9.1",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/jsonschema-specifications-2025.9.1/licenses/COPYING"
+      ],
+      "project_urls": [
+        "Documentation, https://jsonschema-specifications.readthedocs.io/",
+        "Homepage, https://github.com/python-jsonschema/jsonschema-specifications",
+        "Issues, https://github.com/python-jsonschema/jsonschema-specifications/issues/",
+        "Funding, https://github.com/sponsors/Julian",
+        "Tidelift, https://tidelift.com/subscription/pkg/pypi-jsonschema-specifications?utm_source=pypi-jsonschema-specifications&utm_medium=referral&utm_campaign=pypi-link",
+        "Source, https://github.com/python-jsonschema/jsonschema-specifications"
+      ]
+    },
+    {
+      "name": "mcp",
+      "version": "1.30.0",
+      "license_expression": null,
+      "license_metadata": "MIT",
+      "license_classifiers": [
+        "License :: OSI Approved :: MIT License"
+      ],
+      "license_files": [
+        "licenses/mcp-1.30.0/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://modelcontextprotocol.io",
+        "Documentation, https://py.sdk.modelcontextprotocol.io/v1/",
+        "Repository, https://github.com/modelcontextprotocol/python-sdk",
+        "Issues, https://github.com/modelcontextprotocol/python-sdk/issues"
+      ]
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.3",
+      "license_expression": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/numpy-2.5.3/licenses/LICENSE.txt",
+        "licenses/numpy-2.5.3/licenses/numpy/_core/include/numpy/libdivide/LICENSE.txt",
+        "licenses/numpy-2.5.3/licenses/numpy/_core/src/common/pythoncapi-compat/COPYING",
+        "licenses/numpy-2.5.3/licenses/numpy/_core/src/highway/LICENSE",
+        "licenses/numpy-2.5.3/licenses/numpy/_core/src/multiarray/dragon4_LICENSE.txt",
+        "licenses/numpy-2.5.3/licenses/numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/_core/src/umath/svml/LICENSE",
+        "licenses/numpy-2.5.3/licenses/numpy/fft/pocketfft/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/linalg/lapack_lite/LICENSE.txt",
+        "licenses/numpy-2.5.3/licenses/numpy/ma/LICENSE",
+        "licenses/numpy-2.5.3/licenses/numpy/random/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/random/src/distributions/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/random/src/mt19937/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/random/src/pcg64/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/random/src/philox/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/random/src/sfc64/LICENSE.md",
+        "licenses/numpy-2.5.3/licenses/numpy/random/src/splitmix64/LICENSE.md"
+      ],
+      "project_urls": [
+        "homepage, https://numpy.org",
+        "documentation, https://numpy.org/doc/",
+        "source, https://github.com/numpy/numpy",
+        "download, https://pypi.org/project/numpy/#files",
+        "tracker, https://github.com/numpy/numpy/issues",
+        "release notes, https://numpy.org/doc/stable/release"
+      ]
+    },
+    {
+      "name": "opencv-python-headless",
+      "version": "4.14.0.94",
+      "license_expression": null,
+      "license_metadata": "Apache 2.0",
+      "license_classifiers": [
+        "License :: OSI Approved :: Apache Software License"
+      ],
+      "license_files": [
+        "licenses/opencv-python-headless-4.14.0.94/LICENSE-3RD-PARTY.txt",
+        "licenses/opencv-python-headless-4.14.0.94/LICENSE.txt"
+      ],
+      "project_urls": []
+    },
+    {
+      "name": "pillow",
+      "version": "12.3.0",
+      "license_expression": "MIT-CMU",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/pillow-12.3.0/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+        "Changelog, https://github.com/python-pillow/Pillow/releases",
+        "Documentation, https://pillow.readthedocs.io",
+        "Funding, https://tidelift.com/subscription/pkg/pypi-pillow?utm_source=pypi-pillow&utm_medium=pypi",
+        "Homepage, https://python-pillow.github.io",
+        "Mastodon, https://fosstodon.org/@pillow",
+        "Source, https://github.com/python-pillow/Pillow"
+      ]
+    },
+    {
+      "name": "pycparser",
+      "version": "3.11",
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/pycparser-3.11/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/eliben/pycparser"
+      ]
+    },
+    {
+      "name": "pydantic",
+      "version": "2.13.5",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/pydantic-2.13.5/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/pydantic/pydantic",
+        "Documentation, https://docs.pydantic.dev",
+        "Funding, https://github.com/sponsors/samuelcolvin",
+        "Source, https://github.com/pydantic/pydantic",
+        "Changelog, https://docs.pydantic.dev/latest/changelog/"
+      ]
+    },
+    {
+      "name": "pydantic-core",
+      "version": "2.46.5",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/pydantic-core-2.46.5/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Funding, https://github.com/sponsors/samuelcolvin",
+        "Homepage, https://github.com/pydantic",
+        "Source, https://github.com/pydantic/pydantic/tree/main/pydantic-core"
+      ]
+    },
+    {
+      "name": "pydantic-settings",
+      "version": "2.15.0",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [
+        "License :: OSI Approved :: MIT License"
+      ],
+      "license_files": [
+        "licenses/pydantic-settings-2.15.0/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/pydantic/pydantic-settings",
+        "Funding, https://github.com/sponsors/samuelcolvin",
+        "Source, https://github.com/pydantic/pydantic-settings",
+        "Changelog, https://github.com/pydantic/pydantic-settings/releases",
+        "Documentation, https://docs.pydantic.dev/dev-v2/concepts/pydantic_settings/"
+      ]
+    },
+    {
+      "name": "pyjwt",
+      "version": "2.15.1",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/pyjwt-2.15.1/licenses/AUTHORS.rst",
+        "licenses/pyjwt-2.15.1/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/jpadilla/pyjwt"
+      ]
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.4",
+      "license_expression": null,
+      "license_metadata": "BSD-3-Clause",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/python-dotenv-1.2.4/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Source, https://github.com/theskumar/python-dotenv"
+      ]
+    },
+    {
+      "name": "python-multipart",
+      "version": "0.0.32",
+      "license_expression": "Apache-2.0",
+      "license_metadata": "",
+      "license_classifiers": [
+        "License :: OSI Approved :: Apache Software License"
+      ],
+      "license_files": [
+        "licenses/python-multipart-0.0.32/licenses/LICENSE.txt"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/Kludex/python-multipart",
+        "Documentation, https://kludex.github.io/python-multipart/",
+        "Changelog, https://github.com/Kludex/python-multipart/blob/master/CHANGELOG.md",
+        "Source, https://github.com/Kludex/python-multipart"
+      ]
+    },
+    {
+      "name": "pywin32",
+      "version": "312",
+      "license_expression": null,
+      "license_metadata": "PSF",
+      "license_classifiers": [
+        "License :: OSI Approved :: Python Software Foundation License"
+      ],
+      "license_files": [
+        "licenses/pywin32-312/licenses/adodbapi/license.txt",
+        "licenses/pywin32-312/licenses/com/License.txt",
+        "licenses/pywin32-312/licenses/com/win32comext/mapi/src/MAPIStubLibrary/LICENSE",
+        "licenses/pywin32-312/licenses/isapi/README.txt",
+        "licenses/pywin32-312/licenses/pythonwin/License.txt",
+        "licenses/pywin32-312/licenses/pythonwin/Scintilla/License.txt",
+        "licenses/pywin32-312/licenses/pythonwin/pywin/idle/LICENSE.txt",
+        "licenses/pywin32-312/licenses/win32/License.txt"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/mhammond/pywin32",
+        "Changes, https://github.com/mhammond/pywin32/blob/main/CHANGES.md",
+        "Docs, https://mhammond.github.io/pywin32/",
+        "Bugs, https://github.com/mhammond/pywin32/issues",
+        "Support Requests, https://github.com/mhammond/pywin32/discussions",
+        "Mailing List, https://mail.python.org/mailman/listinfo/python-win32"
+      ]
+    },
+    {
+      "name": "referencing",
+      "version": "0.37.0",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/referencing-0.37.0/licenses/COPYING"
+      ],
+      "project_urls": [
+        "Documentation, https://referencing.readthedocs.io/",
+        "Homepage, https://github.com/python-jsonschema/referencing",
+        "Issues, https://github.com/python-jsonschema/referencing/issues/",
+        "Funding, https://github.com/sponsors/Julian",
+        "Tidelift, https://tidelift.com/subscription/pkg/pypi-referencing?utm_source=pypi-referencing&utm_medium=referral&utm_campaign=pypi-link",
+        "Changelog, https://referencing.readthedocs.io/en/stable/changes/",
+        "Source, https://github.com/python-jsonschema/referencing"
+      ]
+    },
+    {
+      "name": "rpds-py",
+      "version": "2026.9.1",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/rpds-py-2026.9.1/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Documentation, https://rpds.readthedocs.io/",
+        "Funding, https://github.com/sponsors/Julian",
+        "Homepage, https://github.com/crate-py/rpds",
+        "Issues, https://github.com/crate-py/rpds/issues/",
+        "Source, https://github.com/crate-py/rpds",
+        "Tidelift, https://tidelift.com/subscription/pkg/pypi-rpds-py?utm_source=pypi-rpds-py&utm_medium=referral&utm_campaign=pypi-link",
+        "Upstream, https://github.com/orium/rpds"
+      ]
+    },
+    {
+      "name": "sse-starlette",
+      "version": "3.5.0",
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/sse-starlette-3.5.0/licenses/AUTHORS",
+        "licenses/sse-starlette-3.5.0/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/sysid/sse-starlette",
+        "Repository, https://github.com/sysid/sse-starlette",
+        "Issues, https://github.com/sysid/sse-starlette/issues",
+        "Source, https://github.com/sysid/sse-starlette"
+      ]
+    },
+    {
+      "name": "starlette",
+      "version": "1.7.0",
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/starlette-1.7.0/licenses/LICENSE.md"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/Kludex/starlette",
+        "Documentation, https://starlette.dev/",
+        "Changelog, https://starlette.dev/release-notes/",
+        "Funding, https://github.com/sponsors/Kludex",
+        "Source, https://github.com/Kludex/starlette"
+      ]
+    },
+    {
+      "name": "typing-extensions",
+      "version": "4.16.0",
+      "license_expression": "PSF-2.0",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/typing-extensions-4.16.0/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Bug Tracker, https://github.com/python/typing_extensions/issues",
+        "Changes, https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+        "Documentation, https://typing-extensions.readthedocs.io/",
+        "Home, https://github.com/python/typing_extensions",
+        "Q & A, https://github.com/python/typing/discussions",
+        "Repository, https://github.com/python/typing_extensions"
+      ]
+    },
+    {
+      "name": "typing-inspection",
+      "version": "0.4.4",
+      "license_expression": "MIT",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/typing-inspection-0.4.4/licenses/LICENSE"
+      ],
+      "project_urls": [
+        "Homepage, https://github.com/pydantic/typing-inspection",
+        "Documentation, https://pydantic.github.io/typing-inspection/dev/",
+        "Source, https://github.com/pydantic/typing-inspection",
+        "Changelog, https://github.com/pydantic/typing-inspection/blob/main/HISTORY.md"
+      ]
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.54.0",
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": "",
+      "license_classifiers": [],
+      "license_files": [
+        "licenses/uvicorn-0.54.0/licenses/LICENSE.md"
+      ],
+      "project_urls": [
+        "Changelog, https://uvicorn.dev/release-notes",
+        "Funding, https://github.com/sponsors/Kludex",
+        "Homepage, https://uvicorn.dev/",
+        "Source, https://github.com/Kludex/uvicorn"
+      ]
+    }
+  ]
+}

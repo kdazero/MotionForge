@@ -1,0 +1,10 @@
+include README.md LICENSE THIRD_PARTY_NOTICES.md CONTRIBUTING.md SECURITY.md CHANGELOG.md
+recursive-include docs *.md
+recursive-include examples *.py *.json *.md *.png *.webp
+recursive-include config *.json
+recursive-include scripts *.py
+recursive-include tests *.py
+recursive-include licenses *
+include requirements-lock-windows-py313.txt
+include .gitattributes .gitignore
+recursive-include .github *.yml

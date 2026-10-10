@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "motionforge"
+version = "0.2.0"
+description = "Local 2D character animation authoring and rendering over MCP"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/**/*"]
+authors = [{name = "MotionForge contributors"}]
+dependencies = ["mcp==1.30.0", "Pillow==12.3.0", "opencv-python-headless==4.14.0.94", "numpy==2.5.3", "pydantic==2.13.5"]
+
+[project.urls]
+Repository = "https://github.com/kdazero/MotionForge"
+Issues = "https://github.com/kdazero/MotionForge/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "ruff>=0.16,<0.17", "build>=1.2,<2"]
+
+[project.scripts]
+motionforge = "motionforge.ai_server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

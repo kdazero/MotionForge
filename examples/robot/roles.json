@@ -1,0 +1,11 @@
+{
+  "root": "root",
+  "body": "body",
+  "head": "head",
+  "hand": "hand",
+  "leg_left": "leg_left",
+  "leg_right": "leg_right",
+  "arm_left": "arm_left",
+  "arm_right": "arm_right",
+  "arm": "arm_right"
+}

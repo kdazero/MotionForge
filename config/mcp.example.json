@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "motionforge": {
+      "command": "REPLACE_WITH_ABSOLUTE_VENV_PYTHON_PATH",
+      "args": ["-m", "motionforge", "--workspace", "REPLACE_WITH_ABSOLUTE_WORKSPACE_PATH"],
+      "env": {"PYTHONUTF8": "1"}
+    }
+  }
+}
