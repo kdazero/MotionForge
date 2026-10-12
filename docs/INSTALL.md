@@ -16,7 +16,7 @@ py -3.13 -m venv .venv
 
 macOS／Linux 使用 `python3 -m venv .venv`，並將以上執行檔替換為 `.venv/bin/python`。Python 與 OpenCV／NumPy 必須支援本機平台；並非所有 CPU 架構均已驗證。
 
-如取得 `.whl` 發布檔，可在虛擬環境內使用 `python -m pip install 完整路徑/motionforge-0.2.0-py3-none-any.whl`。教學腳本與範例在原始碼／使用者 ZIP 中，不在 wheel 中。
+如取得 `.whl` 發布檔，可在虛擬環境內使用 `python -m pip install 完整路徑/motionforge-0.3.2-py3-none-any.whl`。教學腳本與範例在原始碼／使用者 ZIP 中，不在 wheel 中。
 
 ## 建立 MCP 設定
 
@@ -40,7 +40,7 @@ macOS／Linux 使用 `python3 -m venv .venv`，並將以上執行檔替換為 `.
 
 將 `motionforge` 項目合併到你的客戶端設定。不同客戶端設定畫面可能不同，使用其提供的本機 stdio MCP 功能；若不接受 `mcpServers` 包裝，分別填入 command、args 與 env。
 
-重啟連線，讓 AI 呼叫 `get_capabilities`。應看到名稱 MotionForge、版本 0.2.0 與 `requires_spine: false`。再讀取 `motionforge://workflow`。客戶端必須能查看工具回傳圖片，才能進行視覺審查。
+重啟連線，讓 AI 呼叫 `get_capabilities`。應看到名稱 MotionForge、目前版本（例如 0.3.2）與 `requires_spine: false`。再讀取 `motionforge://workflow`。客戶端必須能查看工具回傳圖片，才能進行視覺審查。
 
 ## HTTP（進階）
 
@@ -56,7 +56,8 @@ python -m motionforge --workspace ./workspace --transport http --port 8776
 | --- | --- |
 | 找不到 Python | 安裝 Python 3.12+；Windows 可先用 `py --list` 確認版本 |
 | `No module named motionforge` | 使用安裝時同一個虛擬環境的 Python，並在原始碼根目錄執行 `python -m pip install .` |
-| AI 找不到圖片 | 附件 ID 不是檔案路徑；讓客戶端傳送實際 bytes，或放到 `workspace/inbox/` |
+| AI 找不到圖片 | 附件 ID 不是檔案路徑；讓客戶端用 `upload_asset` 傳送實際 bytes，或把 PNG 放到 `workspace/inbox/`（手動放置只認 PNG） |
+| 鎖定後無法修改角色 | `lock_identity` 之後不能改骨架、附件、圖層規則或原圖；改完後再呼叫一次 `lock_identity` 重新鎖定 |
 | 開啟網頁只有 404 | 本版本沒有操作網頁；使用 MCP 客戶端 |
 | 草稿無法正式匯出 | 完整檢查所有影格並記錄；預覽用途可明確使用 `require_reviewed: false` |
 | 渲染一直未完成 | 保持 MCP 程序存活；程序結束不會自動續跑，需重新開始渲染 |

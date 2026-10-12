@@ -23,7 +23,7 @@ from .joints import attachments, joint_strip, ordered_slots, register_joint
 from .motion import Model, duration, with_animation
 from .render import point
 from .service import MotionService, checked_image
-from .software_renderer import SoftwareRenderer, timeline
+from .software_renderer import SoftwareRenderer, supported, timeline
 from .storage import MotionError, Settings, identifier, inside, read_json, write_json
 
 
@@ -91,6 +91,7 @@ class AIService:
         with self.service.lock():
             folder, manifest, data = self.service._load(project_id)
             updated = with_animation(data, name, animation, overwrite)
+            supported(updated, animation)
             validate_fidelity(updated, folder, animation)
             renderer = SoftwareRenderer(updated, folder, name)
             times = timeline(animation, 30)
@@ -101,7 +102,9 @@ class AIService:
         with self.service.lock():
             folder, manifest, data = self.service._load(project_id)
             data = lock_fidelity(data, folder, bounds, expression_bones, movable_bones, effect_bones)
-            return self.service._commit(folder, manifest, data, "Lock source artwork, proportions and camera")
+            return self.service._commit(
+                folder, manifest, data, "Lock source artwork, proportions and camera", relock=True
+            )
 
     def retime(self, project_id, animation, speed, name=None):
         if not math.isfinite(speed) or not 0.1 <= speed <= 10:
@@ -154,9 +157,13 @@ class AIService:
             choices[name] = dict(
                 type="region", path=file_id, x=x, y=y, width=width, height=height, scaleX=scale, scaleY=scale
             )
-            return self.service._commit(
-                folder, manifest, data, f"Register independent attachment {slot}/{name}"
-            )
+            try:
+                return self.service._commit(
+                    folder, manifest, data, f"Register independent attachment {slot}/{name}"
+                )
+            except Exception:
+                destination.unlink(missing_ok=True)
+                raise
 
     def register_joint_attachment(self, project_id, slot, name, image_path, registration):
         identifier(name)
@@ -198,8 +205,15 @@ class AIService:
             region = dict(type="region", path=file_id, width=width, height=height)
             region, report = register_joint(region, image, registration, reference)
             choices[name] = region
-            shutil.copyfile(source, folder / "images" / (file_id + ".png"))
-            result = self.service._commit(folder, manifest, data, f"Register measured joint {slot}/{name}")
+            destination = folder / "images" / (file_id + ".png")
+            shutil.copyfile(source, destination)
+            try:
+                result = self.service._commit(
+                    folder, manifest, data, f"Register measured joint {slot}/{name}"
+                )
+            except Exception:
+                destination.unlink(missing_ok=True)
+                raise
             result.update(registration=report, source_pixels_changed=False)
             return result
 
@@ -219,9 +233,7 @@ class AIService:
                 raise MotionError("Character changed; inspect again before changing layer rules.")
             ordered_slots(data["slots"], constraints)
             updated = copy.deepcopy(data)
-            updated["layerConstraints"] = constraints
-            for animation in updated.get("animations", {}).values():
-                validate_fidelity(updated, folder, animation)
+            updated["layerConstraints"] = [list(pair) for pair in constraints]
             return self.service._commit(folder, manifest, updated, "Set persistent occlusion constraints")
 
     def analyze(self, project_id, animation, fps=30, skin="default"):
@@ -272,25 +284,29 @@ class AIService:
                     for choices in skin.get("attachments", {}).values()
                     for name, attachment in choices.items()
                 }
-                (run / "source" / "images").mkdir(parents=True)
-                snapshot = copy.deepcopy(data)
-                snapshot["skeleton"]["images"] = "./images/"
-                write_json(run / "source" / "character.json", snapshot)
-                for p in image_paths:
-                    destination = run / "source" / "images" / p.relative_to(folder / "images")
-                    destination.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copyfile(p, destination)
-            self._progress(
-                run,
-                run_id=run_id,
-                status="queued",
-                completed_frames=0,
-                project_id=spec.project_id,
-                revision=manifest["active"],
-                spec=spec.model_dump(),
-                owner_pid=os.getpid(),
-                renderer=SoftwareRenderer.name,
-            )
+                try:
+                    (run / "source" / "images").mkdir(parents=True)
+                    snapshot = copy.deepcopy(data)
+                    snapshot["skeleton"]["images"] = "./images/"
+                    write_json(run / "source" / "character.json", snapshot)
+                    for p in image_paths:
+                        destination = run / "source" / "images" / p.relative_to(folder / "images")
+                        destination.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copyfile(p, destination)
+                    self._progress(
+                        run,
+                        run_id=run_id,
+                        status="queued",
+                        completed_frames=0,
+                        project_id=spec.project_id,
+                        revision=manifest["active"],
+                        spec=spec.model_dump(),
+                        owner_pid=os.getpid(),
+                        renderer=SoftwareRenderer.name,
+                    )
+                except BaseException:
+                    shutil.rmtree(run, ignore_errors=True)
+                    raise
             self._active = run_id
             threading.Thread(target=self._worker, args=(run_id, spec), daemon=True).start()
             return self.status(run_id)
@@ -514,9 +530,6 @@ class AIService:
                 raise MotionError(
                     "Some frames are unreviewed or failed. Inspect and record them, or explicitly export a draft."
                 )
-            folder = self.workspace / "ai-deliveries" / uuid.uuid4().hex
-            folder.mkdir(parents=True)
-            bundle = folder / "animation-bundle.zip"
             for run, r in reports:
                 for frame in r["frames"]:
                     if digest(inside(run, frame["path"])) != frame["sha256"]:
@@ -524,35 +537,45 @@ class AIService:
                 for name, sha in r["artifact_hashes"].items():
                     if digest(inside(run, name)) != sha:
                         raise MotionError("Encoded artifact changed after rendering.")
-            manifest = dict(
-                schema=1,
-                renderer=SoftwareRenderer.name,
-                requires_spine=False,
-                project_id=reports[0][1]["project_id"],
-                revision=reports[0][1]["revision"],
-                visual_review_passed=all(r["visual_review_passed"] for _, r in reports),
-                animations=[
-                    dict(
-                        name=r["animation"],
-                        run_id=r["run_id"],
-                        seconds=r["seconds"],
-                        fps=r["fps"],
-                        frames=len(r["frames"]),
-                        root_pixel=r["root_pixel"],
-                    )
-                    for _, r in reports
-                ],
-            )
-            with zipfile.ZipFile(bundle, "w", zipfile.ZIP_DEFLATED) as z:
-                z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
-                first = reports[0][0]
-                for p in (first / "source").rglob("*"):
-                    if p.is_file():
-                        z.write(p, p.relative_to(first).as_posix())
-                for run, r in reports:
-                    for p in run.rglob("*"):
-                        if p.is_file() and p.parts[len(run.parts)] not in ("source", "inspections"):
-                            z.write(p, "animations/" + r["run_id"] + "/" + p.relative_to(run).as_posix())
-            manifest.update(bundle=self.service.relative(bundle), sha256=digest(bundle))
-            write_json(folder / "manifest.json", manifest)
-            return manifest
+            folder = self.workspace / "ai-deliveries" / uuid.uuid4().hex
+            folder.mkdir(parents=True)
+            try:
+                return self._bundle(folder, reports)
+            except BaseException:
+                shutil.rmtree(folder, ignore_errors=True)
+                raise
+
+    def _bundle(self, folder, reports):
+        bundle = folder / "animation-bundle.zip"
+        manifest = dict(
+            schema=1,
+            renderer=SoftwareRenderer.name,
+            requires_spine=False,
+            project_id=reports[0][1]["project_id"],
+            revision=reports[0][1]["revision"],
+            visual_review_passed=all(r["visual_review_passed"] for _, r in reports),
+            animations=[
+                dict(
+                    name=r["animation"],
+                    run_id=r["run_id"],
+                    seconds=r["seconds"],
+                    fps=r["fps"],
+                    frames=len(r["frames"]),
+                    root_pixel=r["root_pixel"],
+                )
+                for _, r in reports
+            ],
+        )
+        with zipfile.ZipFile(bundle, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+            first = reports[0][0]
+            for p in (first / "source").rglob("*"):
+                if p.is_file():
+                    z.write(p, p.relative_to(first).as_posix())
+            for run, r in reports:
+                for p in run.rglob("*"):
+                    if p.is_file() and p.parts[len(run.parts)] not in ("source", "inspections"):
+                        z.write(p, "animations/" + r["run_id"] + "/" + p.relative_to(run).as_posix())
+        manifest.update(bundle=self.service.relative(bundle), sha256=digest(bundle))
+        write_json(folder / "manifest.json", manifest)
+        return manifest

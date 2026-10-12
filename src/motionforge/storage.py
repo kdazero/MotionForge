@@ -14,17 +14,27 @@ class MotionError(ValueError):
     """An actionable user-facing authoring error."""
 
 
+WINDOWS_RESERVED = {
+    "CON",
+    "PRN",
+    "AUX",
+    "NUL",
+    *(f"COM{i}" for i in range(10)),
+    *(f"LPT{i}" for i in range(10)),
+}
+
+
+def portable_path(value: str) -> str:
+    """Reject relative file paths whose parts are Windows device names (NUL.png, con/x.png)."""
+    if any(part.split(".")[0].upper() in WINDOWS_RESERVED for part in re.split(r"[\\/]", value)):
+        raise MotionError(f"Path uses a name reserved by Windows: {value}")
+    return value
+
+
 def identifier(value: str) -> str:
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", value):
         raise MotionError("Use 1–64 ASCII letters, digits, '-' or '_' for project/file IDs.")
-    if value.upper() in {
-        "CON",
-        "PRN",
-        "AUX",
-        "NUL",
-        *(f"COM{i}" for i in range(10)),
-        *(f"LPT{i}" for i in range(10)),
-    }:
+    if value.upper() in WINDOWS_RESERVED:
         raise MotionError("This ID is reserved by Windows.")
     return value
 

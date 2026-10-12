@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import subprocess
 import tarfile
 import tomllib
 import zipfile
@@ -29,7 +30,20 @@ def public_file(relative):
         return False
     if relative.suffix in {".pyc", ".pyo", ".log"} or relative.name.startswith(".env"):
         return False
+    if relative.name.endswith(".local.json"):
+        return False
     return relative.as_posix() in ROOT_FILES or relative.parts[0] in ROOT_DIRS
+
+
+def candidates(root):
+    """Files tracked by git; a plain source ZIP without .git falls back to the directory tree."""
+    try:
+        listed = subprocess.run(
+            ["git", "ls-files", "-z"], cwd=root, capture_output=True, check=True
+        ).stdout.decode("utf-8")
+    except (OSError, subprocess.CalledProcessError):
+        return [p for p in root.rglob("*") if p.is_file()]
+    return [root / name for name in listed.split("\0") if name and (root / name).is_file()]
 
 
 def main():
@@ -47,7 +61,7 @@ def main():
         )
     with tarfile.open(sdist) as archive:
         assert not any("__pycache__" in n or "/workspace/" in n for n in archive.getnames())
-    files = sorted(p for p in root.rglob("*") if p.is_file() and public_file(p.relative_to(root)))
+    files = sorted(p for p in candidates(root) if public_file(p.relative_to(root)))
     target = dist / f"MotionForge-{version}-user-kit.zip"
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
         for path in files:

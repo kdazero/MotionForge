@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.2 — hardening fixes
+
+- Enforce `lock_identity` on every revision: `update_character` can no longer drop or edit the lock, and setup edits after locking (`register_attachment`, `register_joint_attachment`, `bind_joint_strip`, `bind_mesh`, `add_motion_preset`, `set_layer_constraints`) are rejected before a revision is written instead of leaving a character that can no longer render. Calling `lock_identity` again re-locks deliberately.
+- Fix identical layer constraints being reported as changed after a lock.
+- Reject layer names that differ only by letter case or use Windows device names, and imported image paths with the same problems; previously `Hand`/`hand` silently shared one PNG on Windows and macOS.
+- Apply the `set_animation` naming rule to `add_motion_preset` so preset actions can be overwritten later.
+- Return clear errors for malformed animation/character JSON and unreadable images in `inspect_image` instead of internal exceptions.
+- `read_artifact_bytes` hashes a file once per version rather than on every 256 KB chunk.
+- GIF export keeps the transparent palette index inside the written color table for strict decoders.
+- Remove partially created render and delivery folders on failure; hide interrupted `_staging_*` projects from `list_characters`.
+- `scripts/package_release.py` packages only git-tracked files and never `*.local.json`.
+- Docs: list the recipe, joint and layer-constraint tools, fix stale 0.2.0 references, and state that hand-placed `inbox/` files must be PNG.
+- Rewrite the README in plain, conversational Traditional Chinese, keeping the showcase images.
+
 ## 0.3.1 — joint and artwork assembly fixes
 
 - Replace the README robot illustration with the author-approved original character, wave and thinking animations, shown together at the top.

@@ -39,6 +39,8 @@ def keys_valid(keys):
         raise MotionError("A timeline must contain at most 1201 keyframes.")
     previous = -1
     for key in keys:
+        if not isinstance(key, dict):
+            raise MotionError("Every keyframe must be a JSON object.")
         t = key.get("time", 0)
         if not isinstance(t, (int, float)) or not math.isfinite(t) or not 0 <= t <= 20 or t <= previous:
             raise MotionError("Key times must increase strictly within 0..20 seconds.")
@@ -58,8 +60,24 @@ def keys_valid(keys):
                 raise MotionError("Bezier time controls must be ordered within 0..1.")
 
 
+def animation_shape(animation):
+    if not isinstance(animation, dict):
+        raise MotionError("An animation must be a JSON object of timelines.")
+    for kind in ("bones", "slots", "deform"):
+        value = animation.get(kind, {})
+        if not isinstance(value, dict) or not all(isinstance(v, dict) for v in value.values()):
+            raise MotionError(f"Animation '{kind}' must be an object keyed by name.")
+    for kind in ("drawOrder", "events"):
+        if not isinstance(animation.get(kind, []), list):
+            raise MotionError(f"Animation '{kind}' must be a list of keys.")
+    for channels in (*animation.get("bones", {}).values(), *animation.get("slots", {}).values()):
+        if not all(isinstance(keys, list) for keys in channels.values()):
+            raise MotionError("Every timeline channel must be a list of keys.")
+
+
 def supported(data, animation):
     validate_skeleton(data)
+    animation_shape(animation)
     issues = []
     if any(data.get(k) for k in ("ik", "transform", "path")):
         issues.append("IK/transform/path constraints")
@@ -163,7 +181,7 @@ class SoftwareRenderer:
         skins = {s["name"]: s.get("attachments", {}) for s in data.get("skins", [])}
         if skin not in skins:
             raise MotionError(f"Unknown skin: {skin}")
-        self.parts, self.image_paths = {}, set()
+        self.parts = {}
         self._textures = {}
         vertex_count = 0
         for slot in data.get("slots", []):
@@ -171,7 +189,6 @@ class SoftwareRenderer:
             choices.update(skins[skin].get(slot["name"], {}))
             for name, a in choices.items():
                 path = inside(project / "images", a.get("path", name) + ".png")
-                self.image_paths.add(path)
                 if path not in self._textures:
                     with Image.open(path) as source:
                         if source.width * source.height > 16_000_000:

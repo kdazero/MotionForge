@@ -50,6 +50,8 @@ the outer sleeve/cuff; a height-only weight gradient can pull the whole inner se
 Inspect the isolated torso, sleeve and skin, then their combined setup and raised-arm poses.
 Use set_layer_constraints before lock_identity for persistent [behind,in_front] rules, e.g.
 [head,thinking_hand]. They survive drawOrder keys. Keep wrist roots under upper cuff lips.
+After lock_identity, edits to bones, attachments, layer rules or artwork are rejected; finish
+setup first, or call lock_identity again to re-lock deliberately.
 Coordinates: bone-local Y up; texture UV origin at top left; layers back to front.
 Independent hand or expression attachments belong to the same character, not a new whole-body image.
 Use set_animation for complete bone/slot/deform/drawOrder timelines; key times are seconds,
@@ -100,6 +102,7 @@ def build_ai_server(workspace: Path, port=8776):
         log_level="WARNING",
         max_request_body_size=24_000_000,
     )
+    hashes = {}  # read_artifact_bytes: whole-file SHA-256 of the file being transferred
     read = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False)
     write = ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=False)
 
@@ -215,7 +218,12 @@ def build_ai_server(workspace: Path, port=8776):
             or target.stat().st_size > 32_000_000
         ):
             raise MotionError("Choose an image no larger than 32 MB.")
-        size, content = picture(target)
+        if not target.is_file():
+            raise MotionError("Choose an image file.")
+        try:
+            size, content = picture(target)
+        except (OSError, Image.DecompressionBombError) as exc:
+            raise MotionError("Cannot read that image; it may be damaged or not an image.") from exc
         return [
             json.dumps(dict(path=path, original_size=size, coordinates="original pixels, top left, Y down")),
             content,
@@ -363,16 +371,21 @@ def build_ai_server(workspace: Path, port=8776):
         target = inside(ai.workspace, path)
         if not target.is_file():
             raise MotionError("Choose a file.")
+        stat = target.stat()
         with target.open("rb") as f:
             f.seek(offset)
             content = f.read(length)
+        key = (str(target), stat.st_size, stat.st_mtime_ns)
+        if key not in hashes:
+            hashes.clear()
+            hashes[key] = digest(target)
         return dict(
             path=path,
             offset=offset,
             next_offset=offset + len(content),
-            size=target.stat().st_size,
-            eof=offset + len(content) >= target.stat().st_size,
-            sha256=digest(target),
+            size=stat.st_size,
+            eof=offset + len(content) >= stat.st_size,
+            sha256=hashes[key],
             data_base64=base64.b64encode(content).decode(),
         )
 

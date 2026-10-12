@@ -25,7 +25,7 @@ async def replay(workspace):
     params = StdioServerParameters(
         command=sys.executable,
         args=["-m", "motionforge.ai_server", "--workspace", str(workspace)],
-        env={**os.environ, "PYTHONUTF8": "1", "SPINE_EXECUTABLE": "NOT_INSTALLED.exe"},
+        env={**os.environ, "PYTHONUTF8": "1"},
     )
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:

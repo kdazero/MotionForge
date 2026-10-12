@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "motionforge"
-version = "0.3.1"
+version = "0.3.2"
 description = "Local 2D character animation authoring and rendering over MCP"
 readme = "README.md"
 requires-python = ">=3.12"

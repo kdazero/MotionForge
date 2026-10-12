@@ -18,10 +18,11 @@ from pathlib import Path
 from PIL import Image
 
 from .demo import make_demo
+from .fidelity import validate_fidelity
 from .mesh import MeshSpec, bind_region
 from .motion import Bone, Layer, duration, preset_animation, validate_skeleton, with_animation
 from .software_renderer import supported
-from .storage import MotionError, Settings, identifier, inside, read_json, write_json
+from .storage import MotionError, Settings, identifier, inside, portable_path, read_json, write_json
 
 
 def preview_issues(data, animation):
@@ -101,8 +102,28 @@ class MotionService:
         data = read_json(inside(folder, manifest["active"]))
         return folder, manifest, data
 
-    def _commit(self, folder, manifest, data, reason):
+    def _guard_lock(self, folder, manifest, data, relock):
+        """Every revision of a locked character must keep the lock and satisfy it."""
+        if "active" in manifest:
+            previous = read_json(inside(folder, manifest["active"])).get("fidelity")
+            if previous and not relock and data.get("fidelity") != previous:
+                raise MotionError(
+                    "Character is identity-locked; the lock cannot be removed or edited here. "
+                    "Call lock_identity again to re-lock deliberately."
+                )
+        if data.get("fidelity"):
+            try:
+                validate_fidelity(data, folder, {})
+                for animation in data.get("animations", {}).values():
+                    validate_fidelity(data, folder, animation)
+            except MotionError as exc:
+                raise MotionError(
+                    f"{exc} Make setup/artwork changes before lock_identity, or call lock_identity again."
+                ) from exc
+
+    def _commit(self, folder, manifest, data, reason, relock=False):
         validate_skeleton(data)
+        self._guard_lock(folder, manifest, data, relock)
         revision = f"revisions/{ticket()}.json"
         write_json(folder / revision, data)
         manifest = copy.deepcopy(manifest)
@@ -186,7 +207,8 @@ class MotionService:
         return [
             {"project_id": p.parent.name, "updated_at": read_json(p).get("updated_at")}
             for p in sorted((self.settings.workspace / "projects").glob("*/project.json"))
-            if p.resolve().is_relative_to(self.settings.workspace.resolve())
+            if not p.parent.name.startswith("_staging_")
+            and p.resolve().is_relative_to(self.settings.workspace.resolve())
         ]
 
     def inspect(self, project_id):
@@ -204,8 +226,10 @@ class MotionService:
             raise MotionError("Project already exists. Use a new project_id.")
         if not 1 <= len(layers) <= 64 or not 1 <= len(bones) <= 128:
             raise MotionError("Use 1–64 layers and 1–128 bones.")
-        if len({layer.name for layer in layers}) != len(layers):
-            raise MotionError("Layer names must be unique.")
+        if len({layer.name.casefold() for layer in layers}) != len(layers):
+            raise MotionError("Layer names must be unique, ignoring letter case.")
+        for layer in layers:
+            identifier(layer.name)
         sources = [(layer, inside(self.settings.workspace, layer.image)) for layer in layers]
         dimensions = [checked_image(src) for _, src in sources]
         data = {
@@ -284,8 +308,11 @@ class MotionService:
                     for name, att in attachments.items():
                         if att.get("type", "region") in ("region", "mesh", "linkedmesh"):
                             paths.add(att.get("path", name))
+            if len({name.casefold() for name in paths}) != len(paths):
+                raise MotionError("Image paths must be unique ignoring letter case (Windows/macOS).")
             images = []
             for name in paths:
+                portable_path(name)
                 path = inside(source_images, name + ".png")
                 checked_image(path)
                 images.append((path, name + ".png"))
@@ -319,6 +346,7 @@ class MotionService:
             return self._commit(folder, manifest, data, "Update semantic bone roles")
 
     def add_preset(self, project_id, preset, name=None, seconds=None, strength=1.0, overwrite=False):
+        identifier(name or preset)
         with self.lock():
             folder, manifest, data = self._load(project_id)
             animation = preset_animation(data, preset, manifest.get("roles", {}), seconds, strength)

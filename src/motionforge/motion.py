@@ -156,6 +156,10 @@ PRESETS = {
 
 
 def validate_skeleton(data: dict) -> dict:
+    if not isinstance(data, dict) or not isinstance(data.get("skeleton", {}), dict):
+        raise MotionError("Character data and its 'skeleton' entry must be JSON objects.")
+    if not isinstance(data.get("slots", []), list):
+        raise MotionError("Character 'slots' must be a list.")
     version = data.get("skeleton", {}).get("spine", "")
     if not isinstance(version, str) or not version.startswith("3.8."):
         raise MotionError(
@@ -185,7 +189,12 @@ def validate_skeleton(data: dict) -> dict:
     slots = data.get("slots", [])
     slot_names = set()
     for slot in slots:
-        if slot.get("bone") not in seen or not slot.get("name") or slot["name"] in slot_names:
+        if (
+            not isinstance(slot, dict)
+            or slot.get("bone") not in seen
+            or not slot.get("name")
+            or slot["name"] in slot_names
+        ):
             raise MotionError("Slots require unique names and existing bones.")
         slot_names.add(slot["name"])
     skins = data.get("skins", [])
